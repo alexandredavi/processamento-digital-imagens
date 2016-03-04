@@ -142,14 +142,17 @@ public class Interface extends Shell {
 		labelPosicaoCor.setBounds(16, 14, 55, 15);
 
 		labelR = new Label(this, SWT.NONE);
+		labelR.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_RED));
 		labelR.setFont(SWTResourceManager.getFont("Segoe UI", 16, SWT.NORMAL));
 		labelR.setBounds(13, 132, 72, 39);
 
 		labelG = new Label(this, SWT.NONE);
+		labelG.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_GREEN));
 		labelG.setFont(SWTResourceManager.getFont("Segoe UI", 16, SWT.NORMAL));
 		labelG.setBounds(112, 132, 72, 39);
 
 		labelB = new Label(this, SWT.NONE);
+		labelB.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_BLUE));
 		labelB.setFont(SWTResourceManager.getFont("Segoe UI", 16, SWT.NORMAL));
 		labelB.setBounds(218, 132, 72, 39);
 		createContents();
