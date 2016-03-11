@@ -1,11 +1,17 @@
 package view;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.imageio.ImageIO;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -25,12 +31,16 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.wb.swt.SWTResourceManager;
-import org.eclipse.swt.events.MouseAdapter;
+
+import ruido.AlgoritmoRuido;
+import ruido.ProcessadorMedia;
+import ruido.ProcessadorMediana3x3;
 
 public class Interface extends Shell {
 
     private String diretorioImagem1 = "";
     private String diretorioImagem2 = "";
+    private String diretorioImagem3 = "";
     Image imagem1;
     Image imagem2;
     Image imagem3;
@@ -49,6 +59,7 @@ public class Interface extends Shell {
     private org.eclipse.swt.widgets.List listCores;
     private List<RGB> rgbList = new ArrayList<RGB>();
     private Composite compositeCorLista;
+    private Button btnAplicarMedia;
 
     public static void main(String args[]) {
         try {
@@ -79,6 +90,44 @@ public class Interface extends Shell {
 
         Composite composite = new Composite(tabFolder, SWT.NONE);
         tbtmRuido.setControl(composite);
+        
+        Button btnAplicarMediana = new Button(composite, SWT.NONE);
+        btnAplicarMediana.addSelectionListener(new SelectionAdapter() {
+        	@Override
+        	public void widgetSelected(SelectionEvent arg0) {
+        		AlgoritmoRuido process = new ProcessadorMediana3x3();
+        		try {
+					BufferedImage imagemProcessada = process.processaAlgoritmo(ImageIO.read(new File(diretorioImagem1)));
+					File outputfile = new File(System.getProperty("user.home")+"/Desktop/mediana.png");
+				    ImageIO.write(imagemProcessada, "png", outputfile);
+				    diretorioImagem3 = outputfile.getPath();
+				    abreImagem(3);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+        	}
+        });
+        btnAplicarMediana.setBounds(10, 10, 110, 25);
+        btnAplicarMediana.setText("Aplicar Mediana");
+        
+        btnAplicarMedia = new Button(composite, SWT.NONE);
+        btnAplicarMedia.addSelectionListener(new SelectionAdapter() {
+        	@Override
+        	public void widgetSelected(SelectionEvent arg0) {
+        		AlgoritmoRuido process = new ProcessadorMedia();
+        		try {
+					BufferedImage imagemProcessada = process.processaAlgoritmo(ImageIO.read(new File(diretorioImagem1)));
+					File outputfile = new File(System.getProperty("user.home")+"/Desktop/mediana.png");
+				    ImageIO.write(imagemProcessada, "png", outputfile);
+				    diretorioImagem3 = outputfile.getPath();
+				    abreImagem(3);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+        	}
+        });
+        btnAplicarMedia.setText("Aplicar Media");
+        btnAplicarMedia.setBounds(10, 41, 110, 25);
 
         Button btnImagem1 = new Button(this, SWT.NONE);
         btnImagem1.setBounds(10, 177, 75, 25);
@@ -250,6 +299,11 @@ public class Interface extends Shell {
             if (diretorioImagem2 != null && !diretorioImagem2.equals("")) {
                 imagem2 = new Image(null, diretorioImagem2);
                 carregaImagem(labelImagem2, imagem2);
+            }
+        } else if (numeroImagem == 3) {
+            if (diretorioImagem3 != null && !diretorioImagem3.equals("")) {
+                imagem3 = new Image(null, diretorioImagem3);
+                carregaImagem(labelImagem3, imagem3);
             }
         }
     }
