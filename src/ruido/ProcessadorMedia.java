@@ -14,7 +14,7 @@ public abstract class ProcessadorMedia extends AlgoritmoRuido {
 		for (Integer vlrVizinho : vizinhosR) {
 			valorTotal+=vlrVizinho;
 		}
-		return valorTotal/9;
+		return valorTotal/vizinhosR.size();
 	}
 
 }

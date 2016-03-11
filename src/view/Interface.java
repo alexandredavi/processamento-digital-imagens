@@ -110,7 +110,7 @@ public class Interface extends Shell {
 				}
         		try {
 					BufferedImage imagemProcessada = process.processaAlgoritmo(ImageIO.read(new File(diretorioImagem1)));
-					File outputfile = new File(System.getProperty("user.home")+"/Desktop/mediana.png");
+					File outputfile = new File(System.getProperty("user.home")+"/Desktop/sem_ruido.png");
 				    ImageIO.write(imagemProcessada, "png", outputfile);
 				    diretorioImagem3 = outputfile.getPath();
 				    abreImagem(3);
@@ -134,7 +134,7 @@ public class Interface extends Shell {
 				}
         		try {
 					BufferedImage imagemProcessada = process.processaAlgoritmo(ImageIO.read(new File(diretorioImagem1)));
-					File outputfile = new File(System.getProperty("user.home")+"/Desktop/mediana.png");
+					File outputfile = new File(System.getProperty("user.home")+"/Desktop/sem_ruido.png");
 				    ImageIO.write(imagemProcessada, "png", outputfile);
 				    diretorioImagem3 = outputfile.getPath();
 				    abreImagem(3);
