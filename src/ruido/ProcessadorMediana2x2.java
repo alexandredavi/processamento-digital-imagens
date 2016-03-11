@@ -5,16 +5,16 @@ import java.util.List;
 
 import pdi.PixelsUtils;
 
-public class ProcessadorMediana3x3 extends AlgoritmoRuido{
+public class ProcessadorMediana2x2 extends AlgoritmoRuido{
 
 	@Override
 	protected List<Integer> getPixeisVizinhos(BufferedImage img, int i, int j, int tipoPixel) {
-		return PixelsUtils.getPixeisVizinhos3x3(img, i, j, tipoPixel);
+		return PixelsUtils.getPixeisVizinhos2x2(img, i, j, tipoPixel);
 	}
 
 	@Override
 	protected int aplicaRemocaoDeRuido(List<Integer> vizinhos) {
-		return vizinhos.get(4);
+		return vizinhos.get(2);
 	}
 
 }

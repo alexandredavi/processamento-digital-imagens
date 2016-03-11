@@ -33,7 +33,11 @@ import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.wb.swt.SWTResourceManager;
 
 import ruido.AlgoritmoRuido;
-import ruido.ProcessadorMedia;
+import ruido.ProcessadorMedia2x2;
+import ruido.ProcessadorMedia2x2Diagonal;
+import ruido.ProcessadorMedia3x3;
+import ruido.ProcessadorMediana2x2;
+import ruido.ProcessadorMediana2x2Diagonal;
 import ruido.ProcessadorMediana3x3;
 
 public class Interface extends Shell {
@@ -60,6 +64,9 @@ public class Interface extends Shell {
     private List<RGB> rgbList = new ArrayList<RGB>();
     private Composite compositeCorLista;
     private Button btnAplicarMedia;
+    private Button btn3x3;
+    private Button btnxdiagonal;
+    private Button btnx;
 
     public static void main(String args[]) {
         try {
@@ -95,7 +102,12 @@ public class Interface extends Shell {
         btnAplicarMediana.addSelectionListener(new SelectionAdapter() {
         	@Override
         	public void widgetSelected(SelectionEvent arg0) {
-        		AlgoritmoRuido process = new ProcessadorMediana3x3();
+        		AlgoritmoRuido process = new ProcessadorMediana3x3();;
+        		if (btnx.getSelection()) {
+        			process = new ProcessadorMediana2x2();
+				}else if (btnxdiagonal.getSelection()){
+					process = new ProcessadorMediana2x2Diagonal();
+				}
         		try {
 					BufferedImage imagemProcessada = process.processaAlgoritmo(ImageIO.read(new File(diretorioImagem1)));
 					File outputfile = new File(System.getProperty("user.home")+"/Desktop/mediana.png");
@@ -114,7 +126,12 @@ public class Interface extends Shell {
         btnAplicarMedia.addSelectionListener(new SelectionAdapter() {
         	@Override
         	public void widgetSelected(SelectionEvent arg0) {
-        		AlgoritmoRuido process = new ProcessadorMedia();
+        		AlgoritmoRuido process = new ProcessadorMedia3x3();
+        		if (btnx.getSelection()) {
+        			process = new ProcessadorMedia2x2();
+				}else if (btnxdiagonal.getSelection()){
+					process = new ProcessadorMedia2x2Diagonal();
+				}
         		try {
 					BufferedImage imagemProcessada = process.processaAlgoritmo(ImageIO.read(new File(diretorioImagem1)));
 					File outputfile = new File(System.getProperty("user.home")+"/Desktop/mediana.png");
@@ -128,6 +145,19 @@ public class Interface extends Shell {
         });
         btnAplicarMedia.setText("Aplicar Media");
         btnAplicarMedia.setBounds(10, 41, 110, 25);
+        
+        btn3x3 = new Button(composite, SWT.RADIO);
+        btn3x3.setSelection(true);
+        btn3x3.setBounds(151, 37, 52, 16);
+        btn3x3.setText("3x3");
+        
+        btnxdiagonal = new Button(composite, SWT.RADIO);
+        btnxdiagonal.setText("2x2Diagonal");
+        btnxdiagonal.setBounds(209, 37, 96, 16);
+        
+        btnx = new Button(composite, SWT.RADIO);
+        btnx.setText("2x2");
+        btnx.setBounds(314, 37, 96, 16);
 
         Button btnImagem1 = new Button(this, SWT.NONE);
         btnImagem1.setBounds(10, 177, 75, 25);
