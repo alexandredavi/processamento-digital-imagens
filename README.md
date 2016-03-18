@@ -5,4 +5,4 @@
 
 ### License
 ---
-MIT © [Alexandre Zanelatto](https://github.com/alexandredavi)
+[MIT](https://github.com/alexandredavi/processamento-digital-imagens/blob/master/LICENSE.md) © [Alexandre Zanelatto](https://github.com/alexandredavi)
