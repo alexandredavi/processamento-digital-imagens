@@ -61,5 +61,11 @@ public class PixelsUtils {
 		
 		return pixeisVizinhos;
 	}
+	
+	public static Integer getPixel(BufferedImage img, int i, int j, int tipoPixel) {
+		WritableRaster raster = img.getRaster();
+		int pixels [] = new int[4];
+		return raster.getPixel(i, j, pixels)[tipoPixel];
+	}
 
 }

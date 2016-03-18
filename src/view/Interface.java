@@ -32,6 +32,8 @@ import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.wb.swt.SWTResourceManager;
 
+import linearizacao.AlgoritmoLinearizacao;
+import negativa.AlgoritmoNegativa;
 import ruido.AlgoritmoRuido;
 import ruido.ProcessadorMedia2x2;
 import ruido.ProcessadorMedia2x2Diagonal;
@@ -39,6 +41,16 @@ import ruido.ProcessadorMedia3x3;
 import ruido.ProcessadorMediana2x2;
 import ruido.ProcessadorMediana2x2Diagonal;
 import ruido.ProcessadorMediana3x3;
+import tonndecinza.AlgoritmoTonsDeCinza;
+import tonndecinza.TonsDeCinzaPonderado;
+import tonndecinza.TonsDeCinzaSimples;
+
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Slider;
+import org.eclipse.swt.events.DragDetectListener;
+import org.eclipse.swt.events.DragDetectEvent;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
 
 public class Interface extends Shell {
 
@@ -67,6 +79,19 @@ public class Interface extends Shell {
     private Button btn3x3;
     private Button btnxdiagonal;
     private Button btnx;
+    private TabItem tbtmTonsDeCinza;
+    private Composite composite_1;
+    private Button btnCinzaSimples;
+    private Button btnCinzaPonderado;
+    private Text textPorcentagemR;
+    private Text textPorcentagemG;
+    private Text textPorcentagemB;
+    private TabItem tbtmLinearizao;
+    private Composite composite_2;
+    private Slider sliderPontoDeCorte;
+    private TabItem tbtmNegativa;
+    private Composite composite_3;
+    private Button btnNegativar;
 
     public static void main(String args[]) {
         try {
@@ -102,7 +127,7 @@ public class Interface extends Shell {
         btnAplicarMediana.addSelectionListener(new SelectionAdapter() {
         	@Override
         	public void widgetSelected(SelectionEvent arg0) {
-        		AlgoritmoRuido process = new ProcessadorMediana3x3();;
+        		AlgoritmoRuido process = new ProcessadorMediana3x3();
         		if (btnx.getSelection()) {
         			process = new ProcessadorMediana2x2();
 				}else if (btnxdiagonal.getSelection()){
@@ -110,9 +135,7 @@ public class Interface extends Shell {
 				}
         		try {
 					BufferedImage imagemProcessada = process.processaAlgoritmo(ImageIO.read(new File(diretorioImagem1)));
-					File outputfile = new File(System.getProperty("user.home")+"/Desktop/mediana.png");
-				    ImageIO.write(imagemProcessada, "png", outputfile);
-				    diretorioImagem3 = outputfile.getPath();
+					salvaImagemProcessada(imagemProcessada, "ruido_mediana");
 				    abreImagem(3);
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -134,9 +157,7 @@ public class Interface extends Shell {
 				}
         		try {
 					BufferedImage imagemProcessada = process.processaAlgoritmo(ImageIO.read(new File(diretorioImagem1)));
-					File outputfile = new File(System.getProperty("user.home")+"/Desktop/mediana.png");
-				    ImageIO.write(imagemProcessada, "png", outputfile);
-				    diretorioImagem3 = outputfile.getPath();
+					salvaImagemProcessada(imagemProcessada, "ruido_media");
 				    abreImagem(3);
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -158,6 +179,125 @@ public class Interface extends Shell {
         btnx = new Button(composite, SWT.RADIO);
         btnx.setText("2x2");
         btnx.setBounds(314, 37, 96, 16);
+        
+        tbtmTonsDeCinza = new TabItem(tabFolder, SWT.NONE);
+        tbtmTonsDeCinza.setText("Tons de Cinza");
+        
+        composite_1 = new Composite(tabFolder, SWT.NONE);
+        tbtmTonsDeCinza.setControl(composite_1);
+        composite_1.setLayout(null);
+        
+        btnCinzaSimples = new Button(composite_1, SWT.NONE);
+        btnCinzaSimples.addSelectionListener(new SelectionAdapter() {
+        	@Override
+        	public void widgetSelected(SelectionEvent arg0) {
+        		AlgoritmoTonsDeCinza process = new TonsDeCinzaSimples();
+        		try {
+					BufferedImage imagemProcessada = process.processaAlgoritmo(ImageIO.read(new File(diretorioImagem1)));
+					salvaImagemProcessada(imagemProcessada, "cinza_simples");
+				    abreImagem(3);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+        	}
+        });
+        btnCinzaSimples.setBounds(10, 10, 109, 25);
+        btnCinzaSimples.setText("Cinza Simples");
+        
+        btnCinzaPonderado = new Button(composite_1, SWT.NONE);
+        btnCinzaPonderado.addSelectionListener(new SelectionAdapter() {
+        	@Override
+        	public void widgetSelected(SelectionEvent arg0) {
+        		int percentualR = Integer.parseInt(textPorcentagemR.getText());
+				int percentualG = Integer.parseInt(textPorcentagemG.getText());
+				int percentualB = Integer.parseInt(textPorcentagemB.getText());
+				AlgoritmoTonsDeCinza process = new TonsDeCinzaPonderado(percentualR, percentualG, percentualB);
+        		try {
+					BufferedImage imagemProcessada = process.processaAlgoritmo(ImageIO.read(new File(diretorioImagem1)));
+					salvaImagemProcessada(imagemProcessada, "cinza_ponderado");
+				    abreImagem(3);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+        	}
+        });
+        btnCinzaPonderado.setBounds(10, 41, 109, 25);
+        btnCinzaPonderado.setText("Cinza Ponderado");
+        
+        Label lblr = new Label(composite_1, SWT.NONE);
+        lblr.setBounds(125, 46, 24, 15);
+        lblr.setText("%R");
+        
+        textPorcentagemR = new Text(composite_1, SWT.BORDER);
+        textPorcentagemR.setBounds(149, 41, 44, 21);
+        
+        Label lblg = new Label(composite_1, SWT.NONE);
+        lblg.setBounds(199, 46, 24, 15);
+        lblg.setText("%G");
+        
+        textPorcentagemG = new Text(composite_1, SWT.BORDER);
+        textPorcentagemG.setBounds(224, 41, 44, 21);
+        
+        Label lblb = new Label(composite_1, SWT.NONE);
+        lblb.setText("%B");
+        lblb.setBounds(274, 46, 24, 15);
+        
+        textPorcentagemB = new Text(composite_1, SWT.BORDER);
+        textPorcentagemB.setBounds(299, 41, 44, 21);
+        
+        tbtmLinearizao = new TabItem(tabFolder, SWT.NONE);
+        tbtmLinearizao.setText("Lineariza\u00E7\u00E3o");
+        
+        composite_2 = new Composite(tabFolder, SWT.NONE);
+        tbtmLinearizao.setControl(composite_2);
+        composite_2.setLayout(null);
+        
+        sliderPontoDeCorte = new Slider(composite_2, SWT.NONE);
+        sliderPontoDeCorte.addControlListener(new ControlAdapter() {
+        	@Override
+        	public void controlMoved(ControlEvent arg0) {
+        	}
+        });
+        sliderPontoDeCorte.addDragDetectListener(new DragDetectListener() {
+        	public void dragDetected(DragDetectEvent arg0) {
+        		int pontoDeCorte = sliderPontoDeCorte.getSelection();
+				AlgoritmoLinearizacao process = new AlgoritmoLinearizacao(pontoDeCorte);
+        		try {
+					BufferedImage imagemProcessada = process.processaAlgoritmo(ImageIO.read(new File(diretorioImagem1)));
+					salvaImagemProcessada(imagemProcessada, "linearicao");
+				    abreImagem(3);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+        	}
+        });
+        sliderPontoDeCorte.setBounds(10, 61, 339, 17);
+        sliderPontoDeCorte.setMinimum(0);
+        sliderPontoDeCorte.setMaximum(265);
+        
+        tbtmNegativa = new TabItem(tabFolder, SWT.NONE);
+        tbtmNegativa.setText("Negativa");
+        
+        composite_3 = new Composite(tabFolder, SWT.NONE);
+        tbtmNegativa.setControl(composite_3);
+        composite_3.setLayout(null);
+        
+        btnNegativar = new Button(composite_3, SWT.NONE);
+        btnNegativar.addSelectionListener(new SelectionAdapter() {
+        	@Override
+        	public void widgetSelected(SelectionEvent arg0) {
+				AlgoritmoNegativa process = new AlgoritmoNegativa();
+        		try {
+					BufferedImage imagemProcessada = process.processaAlgoritmo(ImageIO.read(new File(diretorioImagem1)));
+					salvaImagemProcessada(imagemProcessada, "negativa");
+				    abreImagem(3);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+        	}
+        });
+        btnNegativar.setBounds(10, 10, 75, 25);
+        btnNegativar.setText("Negativar");
 
         Button btnImagem1 = new Button(this, SWT.NONE);
         btnImagem1.setBounds(10, 177, 75, 25);
@@ -385,4 +525,10 @@ public class Interface extends Shell {
     protected void checkSubclass() {
         // Disable the check that prevents subclassing of SWT components
     }
+
+	private void salvaImagemProcessada(BufferedImage imagemProcessada, String nomeImagem) throws IOException {
+		File outputfile = new File(System.getProperty("user.home")+"/Desktop/"+nomeImagem+".png");
+		ImageIO.write(imagemProcessada, "png", outputfile);
+		diretorioImagem3 = outputfile.getPath();
+	}
 }
