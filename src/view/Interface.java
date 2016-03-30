@@ -5,12 +5,17 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.DragDetectEvent;
+import org.eclipse.swt.events.DragDetectListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseMoveListener;
@@ -28,12 +33,23 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Slider;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.data.xy.XYDataset;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
 
 import linearizacao.AlgoritmoLinearizacao;
 import negativa.AlgoritmoNegativa;
+import pdi.CalculadorDePixel;
 import ruido.AlgoritmoRuido;
 import ruido.ProcessadorMedia2x2;
 import ruido.ProcessadorMedia2x2Diagonal;
@@ -44,13 +60,6 @@ import ruido.ProcessadorMediana3x3;
 import tonsdecinza.AlgoritmoTonsDeCinza;
 import tonsdecinza.TonsDeCinzaPonderado;
 import tonsdecinza.TonsDeCinzaSimples;
-
-import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.Slider;
-import org.eclipse.swt.events.DragDetectListener;
-import org.eclipse.swt.events.DragDetectEvent;
-import org.eclipse.swt.events.ControlAdapter;
-import org.eclipse.swt.events.ControlEvent;
 
 public class Interface extends Shell {
 
@@ -298,6 +307,31 @@ public class Interface extends Shell {
         });
         btnNegativar.setBounds(10, 10, 75, 25);
         btnNegativar.setText("Negativar");
+        
+        TabItem tabItem = new TabItem(tabFolder, SWT.NONE);
+        tabItem.setText("Contagem de Pixels");
+        
+        Composite composite_4 = new Composite(tabFolder, SWT.NONE);
+        tabItem.setControl(composite_4);
+        composite_4.setLayout(null);
+        
+        Button btnGerarGrafico = new Button(composite_4, SWT.NONE);
+        btnGerarGrafico.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent arg0) {
+                try {
+                    XYDataset dataset = createDataset(ImageIO.read(new File(diretorioImagem1)));
+                    final JFreeChart chart = createChart(dataset);
+                    BufferedImage grafico = chart.createBufferedImage(1000, 500);
+                    salvaImagemProcessada(grafico, "grafico");
+                    abreImagem(3);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        btnGerarGrafico.setBounds(10, 10, 81, 25);
+        btnGerarGrafico.setText("Gerar Grafico");
 
         Button btnImagem1 = new Button(this, SWT.NONE);
         btnImagem1.setBounds(10, 177, 75, 25);
@@ -438,6 +472,70 @@ public class Interface extends Shell {
         btnLimpar.setBounds(809, 177, 142, 25);
         btnLimpar.setText("Limpar");
         createContents();
+    }
+
+    protected JFreeChart createChart(XYDataset dataset) {
+        // create the chart...
+        final JFreeChart chart = ChartFactory.createXYLineChart(
+            "Quantidade de pixels",
+            "Pixel",                      
+            "Quantidade",                  
+            dataset,                
+            PlotOrientation.VERTICAL,
+            true,                     // include legend
+            true,                     // tooltips
+            false                     // urls
+        );
+
+        chart.setBackgroundPaint(java.awt.Color.white);
+
+//        final StandardLegend legend = (StandardLegend) chart.getLegend();
+  //      legend.setDisplaySeriesShapes(true);
+        
+        // get a reference to the plot for further customisation...
+        final XYPlot plot = chart.getXYPlot();
+        plot.setBackgroundPaint(java.awt.Color.lightGray);
+    //    plot.setAxisOffset(new Spacer(Spacer.ABSOLUTE, 5.0, 5.0, 5.0, 5.0));
+        plot.setDomainGridlinePaint(java.awt.Color.white);
+        plot.setRangeGridlinePaint(java.awt.Color.white);
+        
+        // change the auto tick unit selection to integer units only...
+        final NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
+        rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+        // OPTIONAL CUSTOMISATION COMPLETED.
+                
+        return chart;
+    }
+
+    protected XYDataset createDataset(BufferedImage img) {
+        CalculadorDePixel calculadorDePixel = new CalculadorDePixel();
+        calculadorDePixel.calculaQuantidadeDePixels(img);
+        
+        Map<Integer, Integer> qtdPixelsRMap = calculadorDePixel.getQtdPixelsRMap();
+        final XYSeries linhaR = new XYSeries("R");
+        for (Integer pixel : qtdPixelsRMap.keySet()) {
+            linhaR.add((double)pixel, (double)qtdPixelsRMap.get(pixel));
+        }
+        
+        Map<Integer, Integer> qtdPixelsGMap = calculadorDePixel.getQtdPixelsGMap();
+        final XYSeries linhaG = new XYSeries("G");
+        for (Integer pixel : qtdPixelsGMap.keySet()) {
+            linhaG.add((double)pixel, (double)qtdPixelsGMap.get(pixel));
+        }
+
+        Map<Integer, Integer> qtdPixelsBMap = calculadorDePixel.getQtdPixelsBMap();
+        final XYSeries linhaB = new XYSeries("B");
+        for (Integer pixel : qtdPixelsBMap.keySet()) {
+            linhaB.add((double)pixel, (double)qtdPixelsBMap.get(pixel));
+        }
+        
+        final XYSeriesCollection dataset = new XYSeriesCollection();
+        dataset.addSeries(linhaR);
+        dataset.addSeries(linhaB);
+        dataset.addSeries(linhaG);
+                
+        return dataset;
+        
     }
 
     protected void createContents() {
