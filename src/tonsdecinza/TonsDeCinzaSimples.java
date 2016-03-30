@@ -1,4 +1,4 @@
-package tonndecinza;
+package tonsdecinza;
 
 public class TonsDeCinzaSimples extends AlgoritmoTonsDeCinza {
 

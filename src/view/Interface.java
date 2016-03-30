@@ -41,9 +41,9 @@ import ruido.ProcessadorMedia3x3;
 import ruido.ProcessadorMediana2x2;
 import ruido.ProcessadorMediana2x2Diagonal;
 import ruido.ProcessadorMediana3x3;
-import tonndecinza.AlgoritmoTonsDeCinza;
-import tonndecinza.TonsDeCinzaPonderado;
-import tonndecinza.TonsDeCinzaSimples;
+import tonsdecinza.AlgoritmoTonsDeCinza;
+import tonsdecinza.TonsDeCinzaPonderado;
+import tonsdecinza.TonsDeCinzaSimples;
 
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Slider;
