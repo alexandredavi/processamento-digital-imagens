@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.imageio.ImageIO;
 
@@ -309,7 +308,7 @@ public class Interface extends Shell {
         btnNegativar.setText("Negativar");
         
         TabItem tabItem = new TabItem(tabFolder, SWT.NONE);
-        tabItem.setText("Contagem de Pixels");
+        tabItem.setText("Histograma");
         
         Composite composite_4 = new Composite(tabFolder, SWT.NONE);
         tabItem.setControl(composite_4);
@@ -511,24 +510,20 @@ public class Interface extends Shell {
         CalculadorDePixel calculadorDePixel = new CalculadorDePixel();
         calculadorDePixel.calculaQuantidadeDePixels(img);
         
-        Map<Integer, Integer> qtdPixelsRMap = calculadorDePixel.getQtdPixelsRMap();
+        int[] qtdPixelsR = calculadorDePixel.getQtdPixelsR();
+        int[] qtdPixelsG = calculadorDePixel.getQtdPixelsG();
+        int[] qtdPixelsB = calculadorDePixel.getQtdPixelsB();
+        
         final XYSeries linhaR = new XYSeries("R");
-        for (Integer pixel : qtdPixelsRMap.keySet()) {
-            linhaR.add((double)pixel, (double)qtdPixelsRMap.get(pixel));
-        }
-        
-        Map<Integer, Integer> qtdPixelsGMap = calculadorDePixel.getQtdPixelsGMap();
         final XYSeries linhaG = new XYSeries("G");
-        for (Integer pixel : qtdPixelsGMap.keySet()) {
-            linhaG.add((double)pixel, (double)qtdPixelsGMap.get(pixel));
-        }
-
-        Map<Integer, Integer> qtdPixelsBMap = calculadorDePixel.getQtdPixelsBMap();
         final XYSeries linhaB = new XYSeries("B");
-        for (Integer pixel : qtdPixelsBMap.keySet()) {
-            linhaB.add((double)pixel, (double)qtdPixelsBMap.get(pixel));
-        }
-        
+
+        for (int i = 0; i < qtdPixelsR.length; i++) {
+        	linhaR.add(i, qtdPixelsR[i]);
+        	linhaG.add(i, qtdPixelsG[i]);
+        	linhaB.add(i, qtdPixelsB[i]);
+		}
+
         final XYSeriesCollection dataset = new XYSeriesCollection();
         dataset.addSeries(linhaR);
         dataset.addSeries(linhaB);

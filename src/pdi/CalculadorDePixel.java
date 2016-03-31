@@ -6,50 +6,39 @@ import static pdi.PixelsUtils.POSICAO_R;
 import static pdi.PixelsUtils.getPixel;
 
 import java.awt.image.BufferedImage;
-import java.util.HashMap;
-import java.util.Map;
 
 public class CalculadorDePixel {
 
-    private Map<Integer, Integer> qtdPixelsRMap = new HashMap<>();
-    private Map<Integer, Integer> qtdPixelsGMap = new HashMap<>();
-    private Map<Integer, Integer> qtdPixelsBMap = new HashMap<>();
+    private int[] qtdPixelsR = new int[256];
+    private int[] qtdPixelsG = new int[256];
+    private int[] qtdPixelsB = new int[256];
 
     public void calculaQuantidadeDePixels(BufferedImage img) {
         for (int i = 1; i < img.getWidth() - 1; i++) {
             for (int j = 1; j < img.getHeight() - 1; j++) {
 
                 Integer pixelR = getPixel(img, i, j, POSICAO_R);
-                adicinaPixelNoMap(pixelR, qtdPixelsRMap);
+                qtdPixelsR[pixelR]++;
 
                 Integer pixelG = getPixel(img, i, j, POSICAO_G);
-                adicinaPixelNoMap(pixelG, qtdPixelsGMap);
+                qtdPixelsG[pixelG]++;
 
                 Integer pixelB = getPixel(img, i, j, POSICAO_B);
-                adicinaPixelNoMap(pixelB, qtdPixelsBMap);
+                qtdPixelsB[pixelB]++;
             }
         }
     }
 
-    private void adicinaPixelNoMap(Integer pixel, Map<Integer, Integer> qtdPixelsMap) {
-        if (qtdPixelsMap.containsKey(pixel)) {
-            Integer qtdPixel = qtdPixelsMap.get(pixel);
-            qtdPixelsMap.put(pixel, ++qtdPixel);
-        } else {
-            qtdPixelsMap.put(pixel, 1);
-        }
-    }
+	public int[] getQtdPixelsR() {
+		return qtdPixelsR;
+	}
 
-    public Map<Integer, Integer> getQtdPixelsRMap() {
-        return qtdPixelsRMap;
-    }
+	public int[] getQtdPixelsG() {
+		return qtdPixelsG;
+	}
 
-    public Map<Integer, Integer> getQtdPixelsGMap() {
-        return qtdPixelsGMap;
-    }
-
-    public Map<Integer, Integer> getQtdPixelsBMap() {
-        return qtdPixelsBMap;
-    }
+	public int[] getQtdPixelsB() {
+		return qtdPixelsB;
+	}
 
 }
