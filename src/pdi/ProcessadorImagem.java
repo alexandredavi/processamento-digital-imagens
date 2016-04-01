@@ -12,10 +12,10 @@ public abstract class ProcessadorImagem {
 		for (int i = 1; i < img.getWidth()-1; i++) {
 			for (int j = 1; j < img.getHeight()-1; j++) {
 				raster.getPixel(i, j, pixels);
-				int[] medianas = calculaPixeis(img, i, j);
-				pixels[0] = medianas[0];
-				pixels[1] = medianas[1];
-				pixels[2] = medianas[2];
+				int[] novosPixels = calculaPixeis(img, i, j);
+				pixels[0] = novosPixels[0];
+				pixels[1] = novosPixels[1];
+				pixels[2] = novosPixels[2];
 				
 				raster.setPixel(i, j, pixels);
 			}

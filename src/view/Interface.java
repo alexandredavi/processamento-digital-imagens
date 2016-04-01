@@ -46,9 +46,11 @@ import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
+import equalizacao.AlgoritmoEqualizacao;
 import linearizacao.AlgoritmoLinearizacao;
 import negativa.AlgoritmoNegativa;
-import pdi.CalculadorDePixel;
+import pdi.CalculadorDeHistograma;
+import pdi.ProcessadorImagem;
 import ruido.AlgoritmoRuido;
 import ruido.ProcessadorMedia2x2;
 import ruido.ProcessadorMedia2x2Diagonal;
@@ -331,6 +333,30 @@ public class Interface extends Shell {
         });
         btnGerarGrafico.setBounds(10, 10, 81, 25);
         btnGerarGrafico.setText("Gerar Grafico");
+        
+        TabItem tbtmEqualizao = new TabItem(tabFolder, SWT.NONE);
+        tbtmEqualizao.setText("Equaliza\u00E7\u00E3o");
+        
+        Composite composite_5 = new Composite(tabFolder, SWT.NONE);
+        tbtmEqualizao.setControl(composite_5);
+        composite_5.setLayout(null);
+        
+        Button btnEqualizar = new Button(composite_5, SWT.NONE);
+        btnEqualizar.addSelectionListener(new SelectionAdapter() {
+        	@Override
+        	public void widgetSelected(SelectionEvent arg0) {
+        		try {
+					ProcessadorImagem process = new AlgoritmoEqualizacao(ImageIO.read(new File(diretorioImagem1)));
+					BufferedImage imagemProcessada = process.processaAlgoritmo(ImageIO.read(new File(diretorioImagem1)));
+					salvaImagemProcessada(imagemProcessada, "equalizada");
+				    abreImagem(3);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+        	}
+        });
+        btnEqualizar.setBounds(10, 27, 75, 25);
+        btnEqualizar.setText("Equalizar");
 
         Button btnImagem1 = new Button(this, SWT.NONE);
         btnImagem1.setBounds(10, 177, 75, 25);
@@ -507,12 +533,12 @@ public class Interface extends Shell {
     }
 
     protected XYDataset createDataset(BufferedImage img) {
-        CalculadorDePixel calculadorDePixel = new CalculadorDePixel();
-        calculadorDePixel.calculaQuantidadeDePixels(img);
+        CalculadorDeHistograma calculadorDePixel = new CalculadorDeHistograma();
+        calculadorDePixel.calculaHistogramas(img);
         
-        int[] qtdPixelsR = calculadorDePixel.getQtdPixelsR();
-        int[] qtdPixelsG = calculadorDePixel.getQtdPixelsG();
-        int[] qtdPixelsB = calculadorDePixel.getQtdPixelsB();
+        int[] qtdPixelsR = calculadorDePixel.getHistogramaR();
+        int[] qtdPixelsG = calculadorDePixel.getHistogramaG();
+        int[] qtdPixelsB = calculadorDePixel.getHistogramaB();
         
         final XYSeries linhaR = new XYSeries("R");
         final XYSeries linhaG = new XYSeries("G");
