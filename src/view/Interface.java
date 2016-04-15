@@ -63,6 +63,8 @@ import ruido.ProcessadorMediana3x3;
 import tonsdecinza.AlgoritmoTonsDeCinza;
 import tonsdecinza.TonsDeCinzaPonderado;
 import tonsdecinza.TonsDeCinzaSimples;
+import transparencia.AlgoritmoTransparencia;
+
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.ModifyEvent;
@@ -109,6 +111,9 @@ public class Interface extends Shell {
     private Button btnNegativar;
     private Spinner spinnerImagem1;
     private Spinner spinnerImagem2;
+    private TabItem tbtmTransparencia;
+    private Composite composite_7;
+    private Button btnAplicar;
 
     public static void main(String args[]) {
         try {
@@ -376,9 +381,9 @@ public class Interface extends Shell {
         	@Override
         	public void widgetSelected(SelectionEvent arg0) {
 				try {
-					BufferedImage img = ImageIO.read(new File(diretorioImagem1));
+					BufferedImage img = ImageIO.read(new File(diretorioImagem2));
 					ProcessadorImagem process = new AlgoritmoAdicao(img, spinnerImagem1.getSelection(), spinnerImagem2.getSelection());
-					BufferedImage imagemProcessada = process.processaAlgoritmo(ImageIO.read(new File(diretorioImagem2)));
+					BufferedImage imagemProcessada = process.processaAlgoritmo(ImageIO.read(new File(diretorioImagem1)));
 					salvaImagemProcessada(imagemProcessada, "somada");
 					abreImagem(3);
 				} catch (IOException e) {
@@ -394,9 +399,9 @@ public class Interface extends Shell {
         	@Override
         	public void widgetSelected(SelectionEvent arg0) {
         		try {
-					BufferedImage img = ImageIO.read(new File(diretorioImagem1));
+					BufferedImage img = ImageIO.read(new File(diretorioImagem2));
 					ProcessadorImagem process = new AlgoritmoSubtracao(img);
-					BufferedImage imagemProcessada = process.processaAlgoritmo(ImageIO.read(new File(diretorioImagem2)));
+					BufferedImage imagemProcessada = process.processaAlgoritmo(ImageIO.read(new File(diretorioImagem1)));
 					salvaImagemProcessada(imagemProcessada, "subtraida");
 					abreImagem(3);
 				} catch (IOException e) {
@@ -406,6 +411,29 @@ public class Interface extends Shell {
         });
         btnSubtracao.setBounds(120, 32, 75, 25);
         btnSubtracao.setText("Subtra\u00E7\u00E3o");
+        
+        tbtmTransparencia = new TabItem(tabFolder, SWT.NONE);
+        tbtmTransparencia.setText("Transparencia");
+        
+        composite_7 = new Composite(tabFolder, SWT.NONE);
+        tbtmTransparencia.setControl(composite_7);
+        
+        btnAplicar = new Button(composite_7, SWT.NONE);
+        btnAplicar.addSelectionListener(new SelectionAdapter() {
+        	@Override
+        	public void widgetSelected(SelectionEvent arg0) {
+        		try {
+					ProcessadorImagem process = new AlgoritmoTransparencia( spinnerImagem1.getSelection(), spinnerImagem2.getSelection());
+					BufferedImage imagemProcessada = process.processaAlgoritmo(ImageIO.read(new File(diretorioImagem1)));
+					salvaImagemProcessada(imagemProcessada, "transparencia");
+					abreImagem(3);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+        	}
+        });
+        btnAplicar.setBounds(33, 28, 75, 25);
+        btnAplicar.setText("Aplicar");
 
         Button btnImagem1 = new Button(this, SWT.NONE);
         btnImagem1.setBounds(10, 177, 75, 25);
