@@ -581,11 +581,21 @@ public class Interface extends Shell {
         		spinnerImagem2.setSelection(100 - spinnerImagem1.getSelection());
         	}
         });
-        spinnerImagem1.setBounds(91, 180, 47, 22);
+        spinnerImagem1.setBounds(175, 179, 47, 22);
         
         spinnerImagem2 = new Spinner(this, SWT.BORDER);
         spinnerImagem2.setSelection(40);
-        spinnerImagem2.setBounds(427, 180, 47, 22);
+        spinnerImagem2.setBounds(513, 179, 47, 22);
+        
+        Label lblTransparencia = new Label(this, SWT.NONE);
+        lblTransparencia.setFont(SWTResourceManager.getFont("Segoe UI", 9, SWT.NORMAL));
+        lblTransparencia.setBounds(91, 184, 84, 15);
+        lblTransparencia.setText("Transparencia:");
+        
+        Label label = new Label(this, SWT.NONE);
+        label.setText("Transparencia:");
+        label.setFont(SWTResourceManager.getFont("Segoe UI", 9, SWT.NORMAL));
+        label.setBounds(427, 182, 84, 15);
         createContents();
     }
 
