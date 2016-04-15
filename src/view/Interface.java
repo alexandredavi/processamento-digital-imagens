@@ -46,6 +46,8 @@ import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
+import adicaoesubtracao.AlgoritmoAdicao;
+import adicaoesubtracao.AlgoritmoSubtracao;
 import equalizacao.AlgoritmoEqualizacao;
 import linearizacao.AlgoritmoLinearizacao;
 import negativa.AlgoritmoNegativa;
@@ -61,6 +63,9 @@ import ruido.ProcessadorMediana3x3;
 import tonsdecinza.AlgoritmoTonsDeCinza;
 import tonsdecinza.TonsDeCinzaPonderado;
 import tonsdecinza.TonsDeCinzaSimples;
+import org.eclipse.swt.widgets.Spinner;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.ModifyEvent;
 
 public class Interface extends Shell {
 
@@ -102,6 +107,8 @@ public class Interface extends Shell {
     private TabItem tbtmNegativa;
     private Composite composite_3;
     private Button btnNegativar;
+    private Spinner spinnerImagem1;
+    private Spinner spinnerImagem2;
 
     public static void main(String args[]) {
         try {
@@ -357,6 +364,48 @@ public class Interface extends Shell {
         });
         btnEqualizar.setBounds(10, 27, 75, 25);
         btnEqualizar.setText("Equalizar");
+        
+        TabItem tbtmAdio = new TabItem(tabFolder, SWT.NONE);
+        tbtmAdio.setText("Adi\u00E7\u00E3o e Subtra\u00E7\u00E3o");
+        
+        Composite composite_6 = new Composite(tabFolder, SWT.NONE);
+        tbtmAdio.setControl(composite_6);
+        
+        Button btnAdicao = new Button(composite_6, SWT.NONE);
+        btnAdicao.addSelectionListener(new SelectionAdapter() {
+        	@Override
+        	public void widgetSelected(SelectionEvent arg0) {
+				try {
+					BufferedImage img = ImageIO.read(new File(diretorioImagem1));
+					ProcessadorImagem process = new AlgoritmoAdicao(img, spinnerImagem1.getSelection(), spinnerImagem2.getSelection());
+					BufferedImage imagemProcessada = process.processaAlgoritmo(ImageIO.read(new File(diretorioImagem2)));
+					salvaImagemProcessada(imagemProcessada, "somada");
+					abreImagem(3);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+        	}
+        });
+        btnAdicao.setBounds(29, 32, 75, 25);
+        btnAdicao.setText("Adi\u00E7\u00E3o");
+        
+        Button btnSubtracao = new Button(composite_6, SWT.NONE);
+        btnSubtracao.addSelectionListener(new SelectionAdapter() {
+        	@Override
+        	public void widgetSelected(SelectionEvent arg0) {
+        		try {
+					BufferedImage img = ImageIO.read(new File(diretorioImagem1));
+					ProcessadorImagem process = new AlgoritmoSubtracao(img);
+					BufferedImage imagemProcessada = process.processaAlgoritmo(ImageIO.read(new File(diretorioImagem2)));
+					salvaImagemProcessada(imagemProcessada, "subtraida");
+					abreImagem(3);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+        	}
+        });
+        btnSubtracao.setBounds(120, 32, 75, 25);
+        btnSubtracao.setText("Subtra\u00E7\u00E3o");
 
         Button btnImagem1 = new Button(this, SWT.NONE);
         btnImagem1.setBounds(10, 177, 75, 25);
@@ -496,6 +545,19 @@ public class Interface extends Shell {
         });
         btnLimpar.setBounds(809, 177, 142, 25);
         btnLimpar.setText("Limpar");
+        
+        spinnerImagem1 = new Spinner(this, SWT.BORDER);
+        spinnerImagem1.setSelection(60);
+        spinnerImagem1.addModifyListener(new ModifyListener() {
+        	public void modifyText(ModifyEvent arg0) {
+        		spinnerImagem2.setSelection(100 - spinnerImagem1.getSelection());
+        	}
+        });
+        spinnerImagem1.setBounds(91, 180, 47, 22);
+        
+        spinnerImagem2 = new Spinner(this, SWT.BORDER);
+        spinnerImagem2.setSelection(40);
+        spinnerImagem2.setBounds(427, 180, 47, 22);
         createContents();
     }
 
