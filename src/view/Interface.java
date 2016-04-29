@@ -48,11 +48,14 @@ import org.jfree.data.xy.XYSeriesCollection;
 
 import adicaoesubtracao.AlgoritmoAdicao;
 import adicaoesubtracao.AlgoritmoSubtracao;
+import desenhos.PosicoesDTO;
+import desenhos.Quadrado;
 import equalizacao.AlgoritmoEqualizacao;
 import linearizacao.AlgoritmoLinearizacao;
 import negativa.AlgoritmoNegativa;
 import pdi.CalculadorDeHistograma;
 import pdi.ProcessadorImagem;
+import rotacao.GiraImagem;
 import ruido.AlgoritmoRuido;
 import ruido.ProcessadorMedia2x2;
 import ruido.ProcessadorMedia2x2Diagonal;
@@ -114,6 +117,8 @@ public class Interface extends Shell {
     private TabItem tbtmTransparencia;
     private Composite composite_7;
     private Button btnAplicar;
+    private PosicoesDTO posicoesDTO;
+    private Button button;
 
     public static void main(String args[]) {
         try {
@@ -157,7 +162,7 @@ public class Interface extends Shell {
 				}
         		try {
 					BufferedImage imagemProcessada = process.processaAlgoritmo(ImageIO.read(new File(diretorioImagem1)));
-					salvaImagemProcessada(imagemProcessada, "ruido_mediana");
+					diretorioImagem3 = salvaImagemProcessada(imagemProcessada, "ruido_mediana");
 				    abreImagem(3);
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -179,7 +184,7 @@ public class Interface extends Shell {
 				}
         		try {
 					BufferedImage imagemProcessada = process.processaAlgoritmo(ImageIO.read(new File(diretorioImagem1)));
-					salvaImagemProcessada(imagemProcessada, "ruido_media");
+					diretorioImagem3 = salvaImagemProcessada(imagemProcessada, "ruido_media");
 				    abreImagem(3);
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -216,7 +221,7 @@ public class Interface extends Shell {
         		AlgoritmoTonsDeCinza process = new TonsDeCinzaSimples();
         		try {
 					BufferedImage imagemProcessada = process.processaAlgoritmo(ImageIO.read(new File(diretorioImagem1)));
-					salvaImagemProcessada(imagemProcessada, "cinza_simples");
+					diretorioImagem3 = salvaImagemProcessada(imagemProcessada, "cinza_simples");
 				    abreImagem(3);
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -236,7 +241,7 @@ public class Interface extends Shell {
 				AlgoritmoTonsDeCinza process = new TonsDeCinzaPonderado(percentualR, percentualG, percentualB);
         		try {
 					BufferedImage imagemProcessada = process.processaAlgoritmo(ImageIO.read(new File(diretorioImagem1)));
-					salvaImagemProcessada(imagemProcessada, "cinza_ponderado");
+					diretorioImagem3 = salvaImagemProcessada(imagemProcessada, "cinza_ponderado");
 				    abreImagem(3);
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -286,7 +291,7 @@ public class Interface extends Shell {
 				AlgoritmoLinearizacao process = new AlgoritmoLinearizacao(pontoDeCorte);
         		try {
 					BufferedImage imagemProcessada = process.processaAlgoritmo(ImageIO.read(new File(diretorioImagem1)));
-					salvaImagemProcessada(imagemProcessada, "linearicao");
+					diretorioImagem3 = salvaImagemProcessada(imagemProcessada, "linearicao");
 				    abreImagem(3);
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -311,7 +316,7 @@ public class Interface extends Shell {
 				AlgoritmoNegativa process = new AlgoritmoNegativa();
         		try {
 					BufferedImage imagemProcessada = process.processaAlgoritmo(ImageIO.read(new File(diretorioImagem1)));
-					salvaImagemProcessada(imagemProcessada, "negativa");
+					diretorioImagem3 = salvaImagemProcessada(imagemProcessada, "negativa");
 				    abreImagem(3);
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -336,7 +341,7 @@ public class Interface extends Shell {
                     XYDataset dataset = createDataset(ImageIO.read(new File(diretorioImagem1)));
                     final JFreeChart chart = createChart(dataset);
                     BufferedImage grafico = chart.createBufferedImage(1000, 500);
-                    salvaImagemProcessada(grafico, "grafico");
+                    diretorioImagem3 = salvaImagemProcessada(grafico, "grafico");
                     abreImagem(3);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -360,7 +365,7 @@ public class Interface extends Shell {
         		try {
 					ProcessadorImagem process = new AlgoritmoEqualizacao(ImageIO.read(new File(diretorioImagem1)));
 					BufferedImage imagemProcessada = process.processaAlgoritmo(ImageIO.read(new File(diretorioImagem1)));
-					salvaImagemProcessada(imagemProcessada, "equalizada");
+					diretorioImagem3 = salvaImagemProcessada(imagemProcessada, "equalizada");
 				    abreImagem(3);
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -384,7 +389,7 @@ public class Interface extends Shell {
 					BufferedImage img = ImageIO.read(new File(diretorioImagem2));
 					ProcessadorImagem process = new AlgoritmoAdicao(img, spinnerImagem1.getSelection(), spinnerImagem2.getSelection());
 					BufferedImage imagemProcessada = process.processaAlgoritmo(ImageIO.read(new File(diretorioImagem1)));
-					salvaImagemProcessada(imagemProcessada, "somada");
+					diretorioImagem3 = salvaImagemProcessada(imagemProcessada, "somada");
 					abreImagem(3);
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -402,7 +407,7 @@ public class Interface extends Shell {
 					BufferedImage img = ImageIO.read(new File(diretorioImagem2));
 					ProcessadorImagem process = new AlgoritmoSubtracao(img);
 					BufferedImage imagemProcessada = process.processaAlgoritmo(ImageIO.read(new File(diretorioImagem1)));
-					salvaImagemProcessada(imagemProcessada, "subtraida");
+					diretorioImagem3 = salvaImagemProcessada(imagemProcessada, "subtraida");
 					abreImagem(3);
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -425,7 +430,7 @@ public class Interface extends Shell {
         		try {
 					ProcessadorImagem process = new AlgoritmoTransparencia( spinnerImagem1.getSelection(), spinnerImagem2.getSelection());
 					BufferedImage imagemProcessada = process.processaAlgoritmo(ImageIO.read(new File(diretorioImagem1)));
-					salvaImagemProcessada(imagemProcessada, "transparencia");
+					diretorioImagem3 = salvaImagemProcessada(imagemProcessada, "transparencia");
 					abreImagem(3);
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -459,6 +464,9 @@ public class Interface extends Shell {
         btnImagem2.setText("Imagem 2");
 
         compositeImagem1 = new ScrolledComposite(this, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+        compositeImagem1.addMouseListener(new MouseAdapter() {
+        	
+        });
         compositeImagem1.setLocation(13, 208);
         compositeImagem1.setSize(312, 347);
 
@@ -470,6 +478,27 @@ public class Interface extends Shell {
                 rgbList.add(rgb);
                 listCores.add("R:"+rgb.red+", G:"+rgb.green+", B:"+rgb.blue);
             }
+        	@Override
+        	public void mouseUp(MouseEvent arg0) {
+        		posicoesDTO.setX2(arg0.x);
+            	posicoesDTO.setY2(arg0.y);
+            	
+            	try {
+            		Quadrado quadrado = new Quadrado();
+					BufferedImage imagemProcessada = quadrado.criaQuadrado(ImageIO.read(new File(diretorioImagem1)), posicoesDTO);
+					diretorioImagem1 = salvaImagemProcessada(imagemProcessada, "quadrado");
+					imagemProcessada.flush();
+					abreImagem(1);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+        	}
+        	@Override
+        	public void mouseDown(MouseEvent arg0) {
+        		posicoesDTO = new PosicoesDTO();
+            	posicoesDTO.setX1(arg0.x);
+            	posicoesDTO.setY1(arg0.y);
+        	}
         });
         labelImagem1.addMouseMoveListener(new MouseMoveListener() {
             public void mouseMove(MouseEvent arg0) {
@@ -596,6 +625,23 @@ public class Interface extends Shell {
         label.setText("Transparencia:");
         label.setFont(SWTResourceManager.getFont("Segoe UI", 9, SWT.NORMAL));
         label.setBounds(427, 182, 84, 15);
+        
+        button = new Button(this, SWT.NONE);
+        button.addSelectionListener(new SelectionAdapter() {
+        	@Override
+        	public void widgetSelected(SelectionEvent arg0) {
+        		GiraImagem process = new GiraImagem();
+				try {
+					BufferedImage imagemProcessada = process.girar(ImageIO.read(new File(diretorioImagem1)));
+					diretorioImagem3 = salvaImagemProcessada(imagemProcessada, "transparencia");
+					abreImagem(3);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+        	}
+        });
+        button.setBounds(228, 177, 75, 25);
+        button.setText("90\u00BA");
         createContents();
     }
 
@@ -745,9 +791,9 @@ public class Interface extends Shell {
         // Disable the check that prevents subclassing of SWT components
     }
 
-	private void salvaImagemProcessada(BufferedImage imagemProcessada, String nomeImagem) throws IOException {
+	private String salvaImagemProcessada(BufferedImage imagemProcessada, String nomeImagem) throws IOException {
 		File outputfile = new File(System.getProperty("user.home")+"/Desktop/"+nomeImagem+".png");
 		ImageIO.write(imagemProcessada, "png", outputfile);
-		diretorioImagem3 = outputfile.getPath();
+		return outputfile.getPath();
 	}
 }
