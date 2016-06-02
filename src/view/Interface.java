@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.imageio.ImageIO;
+import javax.swing.JOptionPane;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
@@ -55,7 +56,9 @@ import linearizacao.AlgoritmoLinearizacao;
 import negativa.AlgoritmoNegativa;
 import pdi.CalculadorDeHistograma;
 import pdi.ProcessadorImagem;
+import reconhecimento.geometrico.ReconhecimentoQuadrado;
 import rotacao.GiraImagem;
+import rotacao.GiraImagemParcial;
 import ruido.AlgoritmoRuido;
 import ruido.ProcessadorMedia2x2;
 import ruido.ProcessadorMedia2x2Diagonal;
@@ -119,6 +122,14 @@ public class Interface extends Shell {
     private Button btnAplicar;
     private PosicoesDTO posicoesDTO;
     private Button button;
+    private TabItem tbtmZebrado;
+    private Spinner spinnerQtdColunas;
+    private TabItem tbtmGirararea;
+    private Composite composite_9;
+    private Button btnGirar;
+    private TabItem tbtmReconhecimento;
+    private Composite composite_10;
+    private Button btnQuadrado;
 
     public static void main(String args[]) {
         try {
@@ -161,7 +172,9 @@ public class Interface extends Shell {
 					process = new ProcessadorMediana2x2Diagonal();
 				}
         		try {
-					BufferedImage imagemProcessada = process.processaAlgoritmo(ImageIO.read(new File(diretorioImagem1)));
+        			BufferedImage read = ImageIO.read(new File(diretorioImagem1));
+        			PosicoesDTO posicoes = new PosicoesDTO(1, 1, read.getWidth(), read.getHeight());
+					BufferedImage imagemProcessada = process.processaAlgoritmo(read, posicoes);
 					diretorioImagem3 = salvaImagemProcessada(imagemProcessada, "ruido_mediana");
 				    abreImagem(3);
 				} catch (IOException e) {
@@ -183,7 +196,9 @@ public class Interface extends Shell {
 					process = new ProcessadorMedia2x2Diagonal();
 				}
         		try {
-					BufferedImage imagemProcessada = process.processaAlgoritmo(ImageIO.read(new File(diretorioImagem1)));
+        			BufferedImage read = ImageIO.read(new File(diretorioImagem1));
+        			PosicoesDTO posicoes = new PosicoesDTO(1, 1, read.getWidth(), read.getHeight());
+					BufferedImage imagemProcessada = process.processaAlgoritmo(read, posicoes);
 					diretorioImagem3 = salvaImagemProcessada(imagemProcessada, "ruido_media");
 				    abreImagem(3);
 				} catch (IOException e) {
@@ -220,7 +235,9 @@ public class Interface extends Shell {
         	public void widgetSelected(SelectionEvent arg0) {
         		AlgoritmoTonsDeCinza process = new TonsDeCinzaSimples();
         		try {
-					BufferedImage imagemProcessada = process.processaAlgoritmo(ImageIO.read(new File(diretorioImagem1)));
+        			BufferedImage read = ImageIO.read(new File(diretorioImagem1));
+        			PosicoesDTO posicoes = new PosicoesDTO(1, 1, read.getWidth(), read.getHeight());
+					BufferedImage imagemProcessada = process.processaAlgoritmo(read, posicoes);
 					diretorioImagem3 = salvaImagemProcessada(imagemProcessada, "cinza_simples");
 				    abreImagem(3);
 				} catch (IOException e) {
@@ -240,7 +257,9 @@ public class Interface extends Shell {
 				int percentualB = Integer.parseInt(textPorcentagemB.getText());
 				AlgoritmoTonsDeCinza process = new TonsDeCinzaPonderado(percentualR, percentualG, percentualB);
         		try {
-					BufferedImage imagemProcessada = process.processaAlgoritmo(ImageIO.read(new File(diretorioImagem1)));
+					BufferedImage read = ImageIO.read(new File(diretorioImagem1));
+					PosicoesDTO posicoes = new PosicoesDTO(1, 1, read.getWidth(), read.getHeight());
+					BufferedImage imagemProcessada = process.processaAlgoritmo(read, posicoes);
 					diretorioImagem3 = salvaImagemProcessada(imagemProcessada, "cinza_ponderado");
 				    abreImagem(3);
 				} catch (IOException e) {
@@ -290,7 +309,9 @@ public class Interface extends Shell {
         		int pontoDeCorte = sliderPontoDeCorte.getSelection();
 				AlgoritmoLinearizacao process = new AlgoritmoLinearizacao(pontoDeCorte);
         		try {
-					BufferedImage imagemProcessada = process.processaAlgoritmo(ImageIO.read(new File(diretorioImagem1)));
+					BufferedImage read = ImageIO.read(new File(diretorioImagem1));
+					PosicoesDTO posicoes = new PosicoesDTO(1, 1, read.getWidth(), read.getHeight());
+					BufferedImage imagemProcessada = process.processaAlgoritmo(read, posicoes);
 					diretorioImagem3 = salvaImagemProcessada(imagemProcessada, "linearicao");
 				    abreImagem(3);
 				} catch (IOException e) {
@@ -315,7 +336,9 @@ public class Interface extends Shell {
         	public void widgetSelected(SelectionEvent arg0) {
 				AlgoritmoNegativa process = new AlgoritmoNegativa();
         		try {
-					BufferedImage imagemProcessada = process.processaAlgoritmo(ImageIO.read(new File(diretorioImagem1)));
+					BufferedImage read = ImageIO.read(new File(diretorioImagem1));
+					PosicoesDTO posicoes = new PosicoesDTO(1, 1, read.getWidth(), read.getHeight());
+					BufferedImage imagemProcessada = process.processaAlgoritmo(read, posicoes);
 					diretorioImagem3 = salvaImagemProcessada(imagemProcessada, "negativa");
 				    abreImagem(3);
 				} catch (IOException e) {
@@ -363,8 +386,10 @@ public class Interface extends Shell {
         	@Override
         	public void widgetSelected(SelectionEvent arg0) {
         		try {
-					ProcessadorImagem process = new AlgoritmoEqualizacao(ImageIO.read(new File(diretorioImagem1)));
-					BufferedImage imagemProcessada = process.processaAlgoritmo(ImageIO.read(new File(diretorioImagem1)));
+					BufferedImage read = ImageIO.read(new File(diretorioImagem1));
+					ProcessadorImagem process = new AlgoritmoEqualizacao(read);
+					PosicoesDTO posicoes = new PosicoesDTO(1, 1, read.getWidth(), read.getHeight());
+					BufferedImage imagemProcessada = process.processaAlgoritmo(read, posicoes);
 					diretorioImagem3 = salvaImagemProcessada(imagemProcessada, "equalizada");
 				    abreImagem(3);
 				} catch (IOException e) {
@@ -388,7 +413,9 @@ public class Interface extends Shell {
 				try {
 					BufferedImage img = ImageIO.read(new File(diretorioImagem2));
 					ProcessadorImagem process = new AlgoritmoAdicao(img, spinnerImagem1.getSelection(), spinnerImagem2.getSelection());
-					BufferedImage imagemProcessada = process.processaAlgoritmo(ImageIO.read(new File(diretorioImagem1)));
+					BufferedImage read = ImageIO.read(new File(diretorioImagem1));
+					PosicoesDTO posicoes = new PosicoesDTO(1, 1, read.getWidth(), read.getHeight());
+					BufferedImage imagemProcessada = process.processaAlgoritmo(read, posicoes);
 					diretorioImagem3 = salvaImagemProcessada(imagemProcessada, "somada");
 					abreImagem(3);
 				} catch (IOException e) {
@@ -406,7 +433,9 @@ public class Interface extends Shell {
         		try {
 					BufferedImage img = ImageIO.read(new File(diretorioImagem2));
 					ProcessadorImagem process = new AlgoritmoSubtracao(img);
-					BufferedImage imagemProcessada = process.processaAlgoritmo(ImageIO.read(new File(diretorioImagem1)));
+					BufferedImage read = ImageIO.read(new File(diretorioImagem1));
+					PosicoesDTO posicoes = new PosicoesDTO(1, 1, read.getWidth(), read.getHeight());
+					BufferedImage imagemProcessada = process.processaAlgoritmo(read, posicoes);
 					diretorioImagem3 = salvaImagemProcessada(imagemProcessada, "subtraida");
 					abreImagem(3);
 				} catch (IOException e) {
@@ -429,7 +458,9 @@ public class Interface extends Shell {
         	public void widgetSelected(SelectionEvent arg0) {
         		try {
 					ProcessadorImagem process = new AlgoritmoTransparencia( spinnerImagem1.getSelection(), spinnerImagem2.getSelection());
-					BufferedImage imagemProcessada = process.processaAlgoritmo(ImageIO.read(new File(diretorioImagem1)));
+					BufferedImage read = ImageIO.read(new File(diretorioImagem1));
+					PosicoesDTO posicoes = new PosicoesDTO(1, 1, read.getWidth(), read.getHeight());
+					BufferedImage imagemProcessada = process.processaAlgoritmo(read, posicoes);
 					diretorioImagem3 = salvaImagemProcessada(imagemProcessada, "transparencia");
 					abreImagem(3);
 				} catch (IOException e) {
@@ -439,6 +470,104 @@ public class Interface extends Shell {
         });
         btnAplicar.setBounds(33, 28, 75, 25);
         btnAplicar.setText("Aplicar");
+        
+        tbtmZebrado = new TabItem(tabFolder, SWT.NONE);
+        tbtmZebrado.setText("Zebrado");
+        
+        Composite composite_8 = new Composite(tabFolder, SWT.NONE);
+        tbtmZebrado.setControl(composite_8);
+        
+        Label lblColunas = new Label(composite_8, SWT.NONE);
+        lblColunas.setBounds(10, 10, 55, 15);
+        lblColunas.setText("Colunas:");
+        
+        spinnerQtdColunas = new Spinner(composite_8, SWT.BORDER);
+        spinnerQtdColunas.setMaximum(1000);
+        spinnerQtdColunas.setSelection(2);
+        spinnerQtdColunas.setBounds(71, 10, 47, 22);
+        
+        Button btnProcessar = new Button(composite_8, SWT.NONE);
+        btnProcessar.addSelectionListener(new SelectionAdapter() {
+        	@Override
+        	public void widgetSelected(SelectionEvent arg0) {
+        		try {
+					BufferedImage read = ImageIO.read(new File(diretorioImagem1));
+					int qtdZebras = spinnerQtdColunas.getSelection();
+					int tamanhoZebra = read.getWidth() / qtdZebras;
+					boolean zebra = true;
+					for (int i = 0; i < qtdZebras; i++) {
+						if (zebra) {
+							int posicaoInicioZebra = i*tamanhoZebra;
+							PosicoesDTO posicoes = new PosicoesDTO(posicaoInicioZebra, 1, posicaoInicioZebra+tamanhoZebra, read.getHeight());
+							AlgoritmoTonsDeCinza process = new TonsDeCinzaSimples();
+							read = process.processaAlgoritmo(read, posicoes);
+						}
+						zebra = !zebra;
+					}
+					
+					diretorioImagem3 = salvaImagemProcessada(read, "zebrada");
+					abreImagem(3);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+        	}
+        });
+        btnProcessar.setBounds(10, 53, 75, 25);
+        btnProcessar.setText("Processar");
+        
+        tbtmGirararea = new TabItem(tabFolder, SWT.NONE);
+        tbtmGirararea.setText("GirarArea");
+        
+        composite_9 = new Composite(tabFolder, SWT.NONE);
+        tbtmGirararea.setControl(composite_9);
+        
+        btnGirar = new Button(composite_9, SWT.NONE);
+        btnGirar.addSelectionListener(new SelectionAdapter() {
+        	@Override
+        	public void widgetSelected(SelectionEvent arg0) {
+        		BufferedImage read;
+				try {
+					GiraImagemParcial process = new GiraImagemParcial();
+					read = ImageIO.read(new File(diretorioImagem1));
+					BufferedImage imagemProcessada = process.girar(read, posicoesDTO);
+					diretorioImagem3 = salvaImagemProcessada(imagemProcessada, "girar_area");
+					abreImagem(3);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+        		
+        	}
+        });
+        btnGirar.setBounds(10, 10, 75, 25);
+        btnGirar.setText("Girar");
+        
+        tbtmReconhecimento = new TabItem(tabFolder, SWT.NONE);
+        tbtmReconhecimento.setText("Reconhecimento");
+        
+        composite_10 = new Composite(tabFolder, SWT.NONE);
+        tbtmReconhecimento.setControl(composite_10);
+        
+        btnQuadrado = new Button(composite_10, SWT.NONE);
+        btnQuadrado.addSelectionListener(new SelectionAdapter() {
+        	@Override
+        	public void widgetSelected(SelectionEvent arg0) {
+				try {
+					ReconhecimentoQuadrado process = new ReconhecimentoQuadrado();
+					BufferedImage img = ImageIO.read(new File(diretorioImagem1));
+					boolean isQuadradoPreenchido = process.isQuadradoPreenchido(img);
+					if (isQuadradoPreenchido) {
+						JOptionPane.showMessageDialog(null, "Quadrado todo preto");
+					} else {
+						JOptionPane.showMessageDialog(null, "Quadrado somente com borda preta");
+					}
+					
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+        	}
+        });
+        btnQuadrado.setBounds(10, 10, 75, 25);
+        btnQuadrado.setText("Quadrado");
 
         Button btnImagem1 = new Button(this, SWT.NONE);
         btnImagem1.setBounds(10, 177, 75, 25);
@@ -632,7 +761,9 @@ public class Interface extends Shell {
         	public void widgetSelected(SelectionEvent arg0) {
         		GiraImagem process = new GiraImagem();
 				try {
-					BufferedImage imagemProcessada = process.girar(ImageIO.read(new File(diretorioImagem1)));
+					BufferedImage read = ImageIO.read(new File(diretorioImagem1));
+					PosicoesDTO posicoes = new PosicoesDTO(1, read.getWidth(), 1, read.getHeight());
+					BufferedImage imagemProcessada = process.girar(read, posicoes);
 					diretorioImagem3 = salvaImagemProcessada(imagemProcessada, "transparencia");
 					abreImagem(3);
 				} catch (IOException e) {
